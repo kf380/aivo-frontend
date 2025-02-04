@@ -30,7 +30,6 @@ export const ChatResponse: React.FC = () => {
   })
 
   const {
-    handleSubmit,
     reset,
     formState: { isSubmitting },
   } = methods
