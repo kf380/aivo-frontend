@@ -9,6 +9,8 @@ interface ChatResponse {
     owner: boolean
     complete: boolean
     question?: string
+    readable_summary?: string
+    conversationalResponse?:string
   }
 }
 

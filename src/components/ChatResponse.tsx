@@ -5,7 +5,7 @@ import * as z from "zod"
 import { Loader2 } from "lucide-react"
 
 import { useChat } from "../context/ChatContext"
-import { processText } from "../services/api"  
+import { processText } from "../services/api"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "./form"
 import { Textarea } from "./textarea"
 import { Button } from "./button"
@@ -36,10 +36,18 @@ export const ChatResponse: React.FC = () => {
 
   const onSubmit: SubmitHandler<FormValues> = async (values) => {
     try {
+      const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
       const combinedText = `${originalText}\nInformación adicional: ${values.additionalInfo}`
-      const payload = { text: combinedText, oldData: chatResponse.json }
+
+      const payload = {
+        text: combinedText,
+        oldData: chatResponse.json,
+        userTimeZone,
+      }
+
       const result = await processText(payload)
       setChatResponse(result)
+
       reset()
     } catch (error) {
       console.error("Error al enviar la información adicional:", error)
@@ -53,7 +61,6 @@ export const ChatResponse: React.FC = () => {
       </div>
 
       <div className="p-6 space-y-8">
-
         {!chatResponse.json.complete && (
           <div className="bg-blue-50 rounded-xl p-6">
             <h3 className="text-xl font-semibold mb-4 text-blue-800">
@@ -73,8 +80,8 @@ export const ChatResponse: React.FC = () => {
                         rows={4}
                         placeholder="Proporciona la información adicional solicitada..."
                         className="w-full p-4 text-lg border-2 rounded-xl
-                                   focus:ring-4 focus:ring-blue-100 focus:border-blue-500
-                                   transition-all duration-200 resize-none"
+                          focus:ring-4 focus:ring-blue-100 focus:border-blue-500
+                          transition-all duration-200 resize-none"
                       />
                     </FormControl>
                     {fieldState.error && (
@@ -88,11 +95,11 @@ export const ChatResponse: React.FC = () => {
                   type="submit"
                   disabled={isSubmitting}
                   className="px-6 py-2 text-base font-medium rounded-xl
-                             bg-blue-600 hover:bg-blue-700
-                             text-white shadow-md hover:shadow-lg
-                             transform hover:-translate-y-0.5
-                             transition-all duration-200
-                             disabled:opacity-50"
+                    bg-blue-600 hover:bg-blue-700
+                    text-white shadow-md hover:shadow-lg
+                    transform hover:-translate-y-0.5
+                    transition-all duration-200
+                    disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <div className="flex items-center">
@@ -105,6 +112,17 @@ export const ChatResponse: React.FC = () => {
                 </Button>
               </div>
             </Form>
+          </div>
+        )}
+
+        {chatResponse.json.conversationalResponse && (
+          <div className="bg-green-50 rounded-xl p-6">
+            <h3 className="text-xl font-semibold mb-4 text-green-800">
+              Respuesta Conversacional
+            </h3>
+            <p className="text-green-700 mb-4">
+              {chatResponse.json.conversationalResponse}
+            </p>
           </div>
         )}
 
